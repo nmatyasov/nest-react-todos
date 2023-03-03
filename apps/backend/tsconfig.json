@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "paths": {
+      "@users/*": ["apps/backend/src/users/*"],
+      "@auth/*": ["apps/backend/src/auth/*"],
+      "@tasks/*": ["apps/backend/src/tasks/*"],
+      "@libs/*": ["libs/*"]
+    }
+  }
+}
