@@ -25,7 +25,12 @@ import { JwtPayload } from "@libs/payload.interface";
 import { Response } from "express";
 import { getCookieOptions } from "../config/cookie-options";
 import JwtRefreshGuard from "@auth/guards/jwt-refresh.guard";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import credentialsUserDto from "@auth/dto/credentialsUser.dto";
 
+
+
+@ApiTags('Authentication') 
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -33,6 +38,12 @@ export class AuthController {
     private readonly configService: ConfigService
   ) {}
 
+
+  @ApiOperation({ summary: "Creates a new user" })
+  @ApiQuery({ name: "createUserDto", required: true, description: "User credentionals", type :CreateUserDto })
+  @ApiResponse({ status: HttpStatus.OK, description: "Success", })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })  
   @Post("register")
   public async register(
     @Body(ValidationPipe) createUserDto: CreateUserDto
@@ -50,6 +61,11 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(LocalAuthenticationGuard)
   @Post("login")
+  @ApiOperation({ summary: "Login" })
+  @ApiQuery({ name: "RequestWithUser", required: true, description: "User credentionals" , type: credentialsUserDto})
+  @ApiResponse({ status: HttpStatus.OK, description: "Set header auth coockies and jwtPayload", type : JwtPayload})
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })  
   public async login(
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
@@ -75,6 +91,10 @@ export class AuthController {
 
   @UseGuards(JwtRefreshGuard)
   @Get("refresh")
+  @ApiOperation({ summary: "Resfresh access token in coockie" })
+  @ApiResponse({ status: HttpStatus.OK, description: "Refresh header with access token", type : JwtPayload})
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })  
   async refresh(
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
@@ -94,6 +114,10 @@ export class AuthController {
   @UseGuards(JwtAuthenticationGuard)
   @Post("logout")
   @HttpCode(200)
+  @ApiOperation({ summary: "Nullable access tokens in coockies" })
+  @ApiResponse({ status: HttpStatus.OK, description: "Return nullable auth coockies"})
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })  
   async logOut(
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response

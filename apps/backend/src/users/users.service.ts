@@ -1,4 +1,4 @@
-import { LoginUserDto } from '@auth/dto/auth.dto';
+import { LoginUserDto } from '@auth/dto/credentialsUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '@users/dto/user.create.dto';

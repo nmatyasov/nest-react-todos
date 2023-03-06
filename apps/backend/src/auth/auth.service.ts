@@ -1,14 +1,14 @@
-import { AuthUserDto } from "@auth/dto/auth-login.dto";
-import { Types } from "mongoose";
-import { RegistrationStatus } from "@libs/registartion-status.interface";
-import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto } from "@users/dto/user.create.dto";
-import { UsersService } from "@users/users.service";
-import { ConfigService } from "@nestjs/config";
-import { JwtPayload } from "@libs/payload.interface";
-import { LoginUserDto } from "@auth/dto/auth.dto";
-import { UserDto } from "@users/dto/user.dto";
+import { AuthUserDto } from '@auth/dto/auth-login.dto';
+import { Types } from 'mongoose';
+import { RegistrationStatus } from '@libs/registartion-status.interface';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from '@users/dto/user.create.dto';
+import { UsersService } from '@users/users.service';
+import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from '@libs/payload.interface';
+import { LoginUserDto } from '@auth/dto/credentialsUser.dto';
+import { UserDto } from '@users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
   async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
     let status: RegistrationStatus = {
       success: true,
-      message: "user registered",
+      message: 'user registered',
     };
 
     try {
@@ -99,9 +99,9 @@ export class AuthService {
           payload,
         },
         {
-          secret: this.configService.get<string>("JWT_ACCESS_TOKEN_SECRET"),
+          secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
           expiresIn: `${this.configService.get(
-            "JWT_ACCESS_TOKEN_EXPIRATION_TIME"
+            'JWT_ACCESS_TOKEN_EXPIRATION_TIME'
           )}s`,
         }
       ),
@@ -110,9 +110,9 @@ export class AuthService {
           payload,
         },
         {
-          secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
+          secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
           expiresIn: `${this.configService.get(
-            "JWT_REFRESH_TOKEN_EXPIRATION_TIME"
+            'JWT_REFRESH_TOKEN_EXPIRATION_TIME'
           )}s`,
         }
       ),
