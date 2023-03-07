@@ -1,4 +1,4 @@
-import { LoginUserDto } from '@auth/dto/auth.dto';
+import { LoginUserDto } from '@auth/dto/credentialsUser.dto';
 import { Request } from 'express';
 
 interface RequestWithUser extends Request {
