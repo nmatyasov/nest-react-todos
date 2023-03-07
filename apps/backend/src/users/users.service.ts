@@ -14,18 +14,32 @@ export class UsersService {
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>
   ) {}
-
+  /**
+   * Поиск пользователя по email, refreshToken, идентификатору пользователя
+   * @param {any} options параметры поиска
+   * @returns {UserDto} Promise single UserDto
+   */
   //поиск пользователя в БД
   async findOne(options?: object): Promise<UserDto> {
     const user = await this.userModel.findOne(options).exec();
     return toUserDto(user);
   }
 
+  /**
+   * Поиск пользователя по идентификатору пользователя
+   * @param {ObjectId} _id параметры поиска
+   * @returns {UserDto} Promise single UserDto
+   */
   async findById(_id: Types.ObjectId): Promise<UserDto> {
     const user = await this.userModel.findById(_id).exec();
     return toUserDto(user);
   }
-
+  /**
+   * Поиск пользователя по email и password
+   * @param {string} email пользователя
+   * @param {string} password пользователя
+   * @returns {UserDto} Promise single UserDto
+   */
   async findByLogin({ email, password }: LoginUserDto): Promise<UserDto> {
     const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
@@ -39,10 +53,20 @@ export class UsersService {
     return toUserDto(user);
   }
 
+  /**
+   * Поиск пользователя по имени пользователя
+   * @param {string} username пользователя
+   * @returns  {UserDto} Promise single UserDto
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async findByPayload({ username }: any): Promise<UserDto> {
     return await this.findOne({ username });
   }
+  /**
+   * Создание нового пользователя, с проверкой существования в БД (username & email уникальны)
+   * @param {CreateUserDto} createUserDto параметны нового пользователя
+   * @returns {UserDto} Promise UserDto новый пользователь
+   */
 
   async create(createUserDto: CreateUserDto): Promise<UserDto> {
     const { username, password, email } = createUserDto;
@@ -67,10 +91,15 @@ export class UsersService {
 
     return toUserDto(user);
   }
-
+  /**
+   * Поиск пользователя с проверкой валидности RefreshToken
+   * @param {string} refreshToken из заголовка запроса
+   * @param {any} options праметры для посика в БД, обычно username
+   * @returns  {UserDto} Promise single UserDto
+   */
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
-    options?: object
+    options: object
   ): Promise<UserDto> {
     const user = await this.userModel.findOne(options).exec();
 
@@ -92,6 +121,12 @@ export class UsersService {
     }
   }
 
+  /**
+   * Запись в БД RefreshToken
+   * @param {ObjectId} _id  Идентификатор пользователя
+   * @param {string} refreshToken
+   * @returns Promise sinle UserDto
+   */
   async saveToken(_id: Types.ObjectId, refreshToken: string): Promise<UserDto> {
     const user = await this.userModel.findById({ _id }).exec();
     if (!user) {
@@ -102,6 +137,11 @@ export class UsersService {
     return toUserDto(user);
   }
 
+  /**
+   * Удаление в БД RefreshToken
+   * @param  {ObjectId} _id  Идентификатор пользователя
+   * @returns Promise single UserDto with out RefreshToken
+   */
   async removeToken(_id: Types.ObjectId): Promise<UserDto> {
     const user = await this.userModel.findById({ _id }).exec();
     if (!user) {
