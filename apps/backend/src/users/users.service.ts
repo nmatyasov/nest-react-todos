@@ -1,4 +1,3 @@
-import { LoginUserDto } from '@auth/dto/credentialsUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '@users/dto/user.create.dto';
@@ -7,6 +6,7 @@ import { compare } from 'bcrypt';
 import { Model, Types } from 'mongoose';
 import { toUserDto } from '../../src/app/shared/mappers';
 import { UserModel } from './models/user.model';
+import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,7 +40,7 @@ export class UsersService {
    * @param {string} password пользователя
    * @returns {UserDto} Promise single UserDto
    */
-  async findByLogin({ email, password }: LoginUserDto): Promise<UserDto> {
+  async findByLogin({ email, password }: credentialsUserDto): Promise<UserDto> {
     const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

@@ -26,7 +26,7 @@ import { Response } from "express";
 import { getCookieOptions } from "../config/cookie-options";
 import JwtRefreshGuard from "@auth/guards/jwt-refresh.guard";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import credentialsUserDto from "@auth/dto/credentialsUser.dto";
+import {credentialsUserDto} from "@auth/dto/credentialsUser.dto";
 
 
 
