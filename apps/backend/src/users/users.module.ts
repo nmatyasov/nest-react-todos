@@ -12,7 +12,7 @@ import { UsersService } from "./users.service";
       },
     ]),
   ],
-
+  controllers: [],
   providers: [UsersService],
   exports: [UsersService],
 })
