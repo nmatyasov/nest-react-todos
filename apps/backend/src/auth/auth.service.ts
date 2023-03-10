@@ -9,32 +9,48 @@ import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '@libs/payload.interface';
 import { UserDto } from '@users/dto/user.dto';
 import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
+import { EmailConfirmationService } from './../email-confirmation/email-confirmation.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly emailConfirmationService: EmailConfirmationService
   ) {}
+  /**
+   * Регистрация нового пользователя
+   * @param {CreateUserDto} userDto регистрационная информация пользователя
+   * @returns {RegistrationStatus} Promise с результатом регистрации
+   */
 
   async register(userDto: CreateUserDto): Promise<RegistrationStatus> {
     let status: RegistrationStatus = {
       success: true,
       message: 'user registered',
+      url: this.configService.get<string>('FRONTEND_URL') + '/login.html',
     };
 
     try {
-      await this.usersService.create(userDto);
+      const user = await this.usersService.create(userDto);
+      await this.emailConfirmationService.sendVerifictionLink(user.email);
     } catch (err) {
       status = {
         success: false,
         message: err,
+        url:
+          this.configService.get<string>('FRONTEND_URL') + '/registration.html',
       };
     }
     return status;
   }
 
+  /**
+   * Создаем данные пользователя для Response и сохраняем RefreshToken в БД
+   * @param {ObjectId} userId идентификатор пользователя
+   * @returns {AuthUserDto} Promise с результатом регистрации и куками
+   */
   async getCookieWithJwtToken(userId: Types.ObjectId): Promise<AuthUserDto> {
     const user = await this.usersService.findById(userId);
 
@@ -50,10 +66,14 @@ export class AuthService {
     };
   }
 
+  /**
+   * Создаем данные пользователя для Response используется с обновления AccessToken
+   * @param {ObjectId} userId идентификатор пользователя
+   * @returns {AuthUserDto} Promise с результатом регистрации и куками
+   */
   async getCookieWithJwtAccessToken(
     userId: Types.ObjectId
   ): Promise<AuthUserDto> {
-    console.log(userId);
     const user = await this.usersService.findById(userId);
 
     const payload: JwtPayload = { _id: user._id, username: user.username };
@@ -65,16 +85,27 @@ export class AuthService {
       ...tokens,
     };
   }
-
+  /**
+   * Ищем пользователя по RefreshToken
+   * @param {string} refreshToken
+   * @param {ObjectId} userId идентификатор пользователя
+   * @returns {UserDto} Promise single UserDto
+   */
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
     userId: Types.ObjectId
-  ) {
+  ): Promise<UserDto> {
     return await this.usersService.getUserIfRefreshTokenMatches(refreshToken, {
       _id: userId,
     });
   }
 
+  /**
+   * Ищем пользователя по email и password
+   * @param {string} email
+   * @param {string} password
+   * @returns {UserDto} Promise single UserDto
+   */
   async validateUser(email: string, password: string): Promise<UserDto> {
     const loginUserDto: credentialsUserDto = { email, password };
     const user = await this.usersService.findByLogin(loginUserDto);
@@ -82,16 +113,31 @@ export class AuthService {
     return user;
   }
 
+  /**
+   * Ищем пользователя по идентификатору
+   * @param {ObjectId} userId идетнификатор пользователя
+   * @returns {UserDto} Promise single UserDto
+   */
   async validateUserById(userId: Types.ObjectId): Promise<UserDto> {
     const user = await this.usersService.findById(userId);
 
     return user;
   }
 
+  /**
+   * Выполняем выход пользователя, удаляем RefreshToken в БД
+   * @param {ObjectId} userId идетнификатор пользователя
+   * @returns {void} Promise
+   */
   async logout(userId: Types.ObjectId): Promise<void> {
     await this.usersService.removeToken(userId);
   }
 
+  /**
+   * Создает токены с данными о пользователе
+   * @param {JwtPayload} payload данные о пользователе
+   * @returns {accessToken, refreshToken} Promise  пара токенов accessToken и refreshToken
+   */
   private async getTokens(payload: JwtPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(

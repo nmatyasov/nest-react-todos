@@ -10,6 +10,7 @@ import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
 
 @Injectable()
 export class UsersService {
+
   constructor(
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>
@@ -150,5 +151,16 @@ export class UsersService {
     user.refreshToken = null;
     user.save();
     return toUserDto(user);
+  }
+
+
+
+  async markEmailAsConfirmed(email:string):Promise<void> {
+    const user = await this.userModel.findOne({email}).exec();
+    if (!user) {
+      throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
+    }
+    user.isEmailConfirmed = true;
+    user.save();
   }
 }

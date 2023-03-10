@@ -16,6 +16,7 @@
       "@users/*": ["apps/backend/src/users/*"],
       "@auth/*": ["apps/backend/src/auth/*"],
       "@tasks/*": ["apps/backend/src/tasks/*"],
+      "@email/*": ["apps/backend/src/email/*"],
       "@libs/*": ["libs/*"]
     }
   }

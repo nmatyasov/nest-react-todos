@@ -15,10 +15,7 @@ export class UserModel extends Document implements IUser {
   email: string;
 
   @Prop({ default: false })
-  isActivated: boolean;
-
-  @Prop()
-  activationLink: string;
+  isEmailConfirmed: boolean;
 
   @Prop()
   refreshToken: string;

@@ -6,12 +6,13 @@ import { UserModel } from '@users/models/user.model';
 import { Types } from 'mongoose';
 
 export const toUserDto = (data: UserModel): UserDto => {
-  const {_id, username, email} = data;
+  const {_id, username, email, isEmailConfirmed} = data;
 
   const userDto: UserDto & { _id: Types.ObjectId } = {
     _id,
     username,
-    email
+    email,
+    isEmailConfirmed
   };
 
   return userDto;
