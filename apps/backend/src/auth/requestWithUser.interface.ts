@@ -1,8 +1,8 @@
-import { LoginUserDto } from '@auth/dto/credentialsUser.dto';
+import { JwtPayload } from '@libs/payload.interface';
 import { Request } from 'express';
 
 interface RequestWithUser extends Request {
-  user: LoginUserDto;
+  user: JwtPayload;
 }
 
 export default RequestWithUser;

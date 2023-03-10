@@ -26,7 +26,8 @@ import { Response } from "express";
 import { getCookieOptions } from "../config/cookie-options";
 import JwtRefreshGuard from "@auth/guards/jwt-refresh.guard";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import credentialsUserDto from "@auth/dto/credentialsUser.dto";
+import {credentialsUserDto} from "@auth/dto/credentialsUser.dto";
+
 
 
 
@@ -35,11 +36,11 @@ import credentialsUserDto from "@auth/dto/credentialsUser.dto";
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
 
-  @ApiOperation({ summary: "Creates a new user" })
+  @ApiOperation({ summary: "Creates a new user and send email for confirm email" })
   @ApiQuery({ name: "createUserDto", required: true, description: "User credentionals", type :CreateUserDto })
   @ApiResponse({ status: HttpStatus.OK, description: "Success", })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
@@ -55,6 +56,7 @@ export class AuthController {
     if (!result.success) {
       throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
     }
+    /*В случае успешной регистрации запрашиваем подтверждение почты и переходим на форму авторизации*/
     return result;
   }
 
@@ -74,7 +76,6 @@ export class AuthController {
       await this.authService.getCookieWithJwtToken(req.user._id);
 
     /*задаем куки */
-
     res.cookie(
       "AccessToken",
       loginStatus.accessToken,
@@ -114,7 +115,7 @@ export class AuthController {
   @UseGuards(JwtAuthenticationGuard)
   @Post("logout")
   @HttpCode(200)
-  @ApiOperation({ summary: "Nullable access tokens in coockies" })
+  @ApiOperation({ summary: "Nullable auth tokens in coockies" })
   @ApiResponse({ status: HttpStatus.OK, description: "Return nullable auth coockies"})
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })  

@@ -15,4 +15,8 @@ export class UserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @ApiProperty({ description: 'User email', nullable: true })
+  isEmailConfirmed: boolean;
+
 }
