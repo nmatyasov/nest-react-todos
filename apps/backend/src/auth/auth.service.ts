@@ -49,15 +49,23 @@ export class AuthService {
   /**
    * Создаем данные пользователя для Response и сохраняем RefreshToken в БД
    * @param {ObjectId} userId идентификатор пользователя
+   * @param {string} fingerprint fingerprint браузера пользователя
    * @returns {AuthUserDto} Promise с результатом регистрации и куками
    */
-  async getCookieWithJwtToken(userId: Types.ObjectId): Promise<AuthUserDto> {
+  async getCookieWithJwtToken(
+    userId: Types.ObjectId,
+    fingerprint: string
+  ): Promise<AuthUserDto> {
     const user = await this.usersService.findById(userId);
 
     const payload: JwtPayload = { _id: user._id, username: user.username };
     const tokens = await this.getTokens(payload);
 
-    await this.usersService.saveToken(user._id, tokens.refreshToken);
+    await this.usersService.saveToken(
+      user._id,
+      tokens.refreshToken,
+      fingerprint
+    );
 
     return {
       _id: user._id,

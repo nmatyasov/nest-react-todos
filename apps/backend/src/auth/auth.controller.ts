@@ -27,6 +27,7 @@ import { getCookieOptions } from '../config/cookie-options';
 import JwtRefreshGuard from '@auth/guards/jwt-refresh.guard';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
+import { GetFingerprintBrowser } from '@auth/get-fingerprint.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -81,11 +82,13 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   public async login(
+    @GetFingerprintBrowser() fingerprint: string,
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
   ): Promise<JwtPayload> {
+
     const loginStatus: AuthUserDto =
-      await this.authService.getCookieWithJwtToken(req.user._id);
+      await this.authService.getCookieWithJwtToken(req.user._id, fingerprint);
 
     /*задаем куки */
     res.cookie(
