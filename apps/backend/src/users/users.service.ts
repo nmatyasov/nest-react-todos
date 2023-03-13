@@ -10,7 +10,6 @@ import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>
@@ -126,9 +125,14 @@ export class UsersService {
    * Запись в БД RefreshToken
    * @param {ObjectId} _id  Идентификатор пользователя
    * @param {string} refreshToken
+   * @param {string} fingerprint браузера пользователя
    * @returns Promise sinle UserDto
    */
-  async saveToken(_id: Types.ObjectId, refreshToken: string): Promise<UserDto> {
+  async saveToken(
+    _id: Types.ObjectId,
+    refreshToken: string,
+    fingerprint: string
+  ): Promise<UserDto> {
     const user = await this.userModel.findById({ _id }).exec();
     if (!user) {
       throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
@@ -153,10 +157,8 @@ export class UsersService {
     return toUserDto(user);
   }
 
-
-
-  async markEmailAsConfirmed(email:string):Promise<void> {
-    const user = await this.userModel.findOne({email}).exec();
+  async markEmailAsConfirmed(email: string): Promise<void> {
+    const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
     }
