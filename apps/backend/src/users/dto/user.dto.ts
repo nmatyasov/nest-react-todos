@@ -16,7 +16,9 @@ export class UserDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: 'User email', nullable: true })
+  @ApiProperty({ description: 'User email confirmed status', nullable: true })
   isEmailConfirmed: boolean;
 
+  @ApiProperty({ description: 'Refresh token for mobile app', nullable: true })
+  refreshToken: string;
 }

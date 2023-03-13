@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class JwtPayload {
@@ -6,4 +6,6 @@ export class JwtPayload {
   _id: Types.ObjectId;
   @ApiProperty({ description: 'User name', nullable: false })
   username: string;
+  @ApiProperty({ description: 'Refresh token for mobile app', nullable: true })
+  refreshToken?: string;
 }
