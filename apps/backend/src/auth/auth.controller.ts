@@ -86,7 +86,7 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
   ): Promise<JwtPayload> {
-
+    
     const loginStatus: AuthUserDto =
       await this.authService.getCookieWithJwtToken(req.user._id, fingerprint);
 
@@ -152,7 +152,7 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
   ): Promise<void> {
-    await this.authService.logout(req.user._id);
+    await this.authService.logout(req.user._id, req.user.refreshToken);
 
     res.cookie('AccessToken', '', {
       maxAge: 0,

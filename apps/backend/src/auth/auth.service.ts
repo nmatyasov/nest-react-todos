@@ -10,6 +10,8 @@ import { JwtPayload } from '@libs/payload.interface';
 import { UserDto } from '@users/dto/user.dto';
 import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
 import { EmailConfirmationService } from './../email-confirmation/email-confirmation.service';
+import { RefreshSessionsService } from './../refresh-sessions/refresh-sessions.service';
+import { RefreshTokenSessionDto } from './../refresh-sessions/dto/refreshTokenSession.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +19,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly emailConfirmationService: EmailConfirmationService
+    private readonly emailConfirmationService: EmailConfirmationService,
+    private readonly refreshSessionsService: RefreshSessionsService
   ) {}
   /**
    * Регистрация нового пользователя
@@ -61,11 +64,21 @@ export class AuthService {
     const payload: JwtPayload = { _id: user._id, username: user.username };
     const tokens = await this.getTokens(payload);
 
-    await this.usersService.saveToken(
-      user._id,
-      tokens.refreshToken,
-      fingerprint
+    const expires: string = this.configService.get<string>(
+      'JWT_REFRESH_TOKEN_EXPIRATION_TIME'
     );
+    const expiresIn:number =Math.floor(Date.now()/1000)+parseInt(expires,10);
+    const refreshTokenSessionDto: RefreshTokenSessionDto = {
+      token: tokens.refreshToken,
+      fingerprint,
+      expiresIn,
+      userId,
+    };
+    /* запись refersToken*/
+    await this.refreshSessionsService.saveToken(
+      refreshTokenSessionDto
+    );
+
 
     return {
       _id: user._id,
@@ -103,9 +116,12 @@ export class AuthService {
     refreshToken: string,
     userId: Types.ObjectId
   ): Promise<UserDto> {
-    return await this.usersService.getUserIfRefreshTokenMatches(refreshToken, {
-      _id: userId,
-    });
+    return await this.refreshSessionsService.getUserIfRefreshTokenMatches(
+      refreshToken,
+      {
+        _id: userId,
+      }
+    );
   }
 
   /**
@@ -115,6 +131,7 @@ export class AuthService {
    * @returns {UserDto} Promise single UserDto
    */
   async validateUser(email: string, password: string): Promise<UserDto> {
+
     const loginUserDto: credentialsUserDto = { email, password };
     const user = await this.usersService.findByLogin(loginUserDto);
 
@@ -133,12 +150,13 @@ export class AuthService {
   }
 
   /**
-   * Выполняем выход пользователя, удаляем RefreshToken в БД
+   * Выполняем выход пользователя из приложения, удаляем RefreshToken в БД
    * @param {ObjectId} userId идетнификатор пользователя
+   * @param {string} token refreshToken
    * @returns {void} Promise
    */
-  async logout(userId: Types.ObjectId): Promise<void> {
-    await this.usersService.removeToken(userId);
+  async logout(userId: Types.ObjectId, token: string): Promise<void> {
+    await this.refreshSessionsService.removeToken(userId, token);
   }
 
   /**
