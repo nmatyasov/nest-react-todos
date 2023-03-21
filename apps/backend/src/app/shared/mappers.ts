@@ -2,17 +2,17 @@ import { TaskDto } from '@tasks/dto/task.dto';
 import { TaskModel } from '@tasks/models/task.models';
 import { UserDto } from '@users/dto/user.dto';
 import { UserModel } from '@users/models/user.model';
+
 import { Types } from 'mongoose';
 
 export const toUserDto = (data: UserModel): UserDto => {
-  const { _id, username, email, isEmailConfirmed, refreshToken } = data;
+  const { _id, username, email, isEmailConfirmed } = data;
 
   const userDto: UserDto & { _id: Types.ObjectId } = {
     _id,
     username,
     email,
     isEmailConfirmed,
-    refreshToken,
   };
 
   return userDto;

@@ -9,8 +9,9 @@ import { UsersModule } from '@users/users.module';
 import { AuthService } from './auth.service';
 import { JwtRefreshTokenStrategy } from '@auth/strategies/jwt-refresh-token.strategy';
 
-import { EmailConfirmationModule } from './../email-confirmation/email-confirmation.module';
 
+import { EmailConfirmationModule } from './../email-confirmation/email-confirmation.module';
+import { RefreshSessionsModule } from './../refresh-sessions/refresh-sessions.module';
 const jwtFactory = {
   useFactory: async (configService: ConfigService) => ({
     secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
@@ -25,11 +26,12 @@ const jwtFactory = {
 
 @Module({
   imports: [
-    UsersModule,
+  UsersModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync(jwtFactory),
     EmailConfirmationModule,
+    RefreshSessionsModule
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshTokenStrategy],
   exports: [AuthService],

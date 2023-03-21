@@ -16,10 +16,6 @@ export class UserModel extends Document implements IUser {
 
   @Prop({ default: false })
   isEmailConfirmed: boolean;
-
-  @Prop()
-  refreshToken: string;
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);

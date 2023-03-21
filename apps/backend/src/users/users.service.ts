@@ -91,71 +91,12 @@ export class UsersService {
 
     return toUserDto(user);
   }
-  /**
-   * Поиск пользователя с проверкой валидности RefreshToken
-   * @param {string} refreshToken из заголовка запроса
-   * @param {any} options праметры для посика в БД, обычно username
-   * @returns  {UserDto} Promise single UserDto
-   */
-  async getUserIfRefreshTokenMatches(
-    refreshToken: string,
-    options: object
-  ): Promise<UserDto> {
-    const user = await this.userModel.findOne(options).exec();
-
-    if (!user) {
-      throw new HttpException('Invalid credantials', HttpStatus.UNAUTHORIZED);
-    }
-
-    //если токен в БД хэширован
-    // const isRefreshTokenMatching = await compare(
-    //   refreshToken,
-    //  user.refreshToken
-    // );
-
-    const isRefreshTokenMatching =
-      refreshToken === user.refreshToken ? true : false;
-
-    if (isRefreshTokenMatching) {
-      return toUserDto(user);
-    }
-  }
 
   /**
-   * Запись в БД RefreshToken
-   * @param {ObjectId} _id  Идентификатор пользователя
-   * @param {string} refreshToken
-   * @param {string} fingerprint браузера пользователя
-   * @returns Promise sinle UserDto
+   * Запись отметки что почта подтверждена
+   * @param {string}email
+   * @returns  {void} Promise
    */
-  async saveToken(
-    _id: Types.ObjectId,
-    refreshToken: string,
-    fingerprint: string
-  ): Promise<UserDto> {
-    const user = await this.userModel.findById({ _id }).exec();
-    if (!user) {
-      throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
-    }
-    user.refreshToken = refreshToken;
-    user.save();
-    return toUserDto(user);
-  }
-
-  /**
-   * Удаление в БД RefreshToken
-   * @param  {ObjectId} _id  Идентификатор пользователя
-   * @returns Promise single UserDto with out RefreshToken
-   */
-  async removeToken(_id: Types.ObjectId): Promise<UserDto> {
-    const user = await this.userModel.findById({ _id }).exec();
-    if (!user) {
-      throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
-    }
-    user.refreshToken = null;
-    user.save();
-    return toUserDto(user);
-  }
 
   async markEmailAsConfirmed(email: string): Promise<void> {
     const user = await this.userModel.findOne({ email }).exec();
@@ -165,4 +106,7 @@ export class UsersService {
     user.isEmailConfirmed = true;
     user.save();
   }
+
+
+
 }

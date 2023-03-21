@@ -10,7 +10,7 @@ export const getCookieOptions = (
     httpOnly: true,
     secure: JSON.parse(configService.get<string>("HTTPS_ONLY")),
     expires: new Date(
-      Date.now() + parseInt(configService.get<string>(tokenExp))
+      Date.now() + (parseInt(configService.get<string>(tokenExp))*1000) 
     ),
   };
   return {
