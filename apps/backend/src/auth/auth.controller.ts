@@ -86,7 +86,6 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response
   ): Promise<JwtPayload> {
-    
     const loginStatus: AuthUserDto =
       await this.authService.getCookieWithJwtToken(req.user._id, fingerprint);
 
@@ -106,6 +105,7 @@ export class AuthController {
       _id: loginStatus._id,
       username: loginStatus.username,
       refreshToken: loginStatus.refreshToken,
+      roles: loginStatus.roles,
     };
   }
 
@@ -135,6 +135,7 @@ export class AuthController {
       _id: authUser._id,
       username: authUser.username,
       refreshToken: authUser.refreshToken,
+      roles: authUser.roles,
     };
   }
 

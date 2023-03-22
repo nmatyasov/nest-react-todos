@@ -7,6 +7,7 @@ import { getMongoConfig } from '../config/db-connect.config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { RefreshSessionsModule } from '@refresh-sessions/refresh-sessions.module';
 
 @Module({
   imports: [
@@ -21,15 +22,13 @@ import { AppService } from './app.service';
     }),
     AuthModule,
     TasksModule,
+    RefreshSessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-
 export class AppModule implements OnApplicationShutdown {
   onApplicationShutdown(signal: string) {
     console.log(`Application shut down (signal: ${signal})`);
   }
 }
-

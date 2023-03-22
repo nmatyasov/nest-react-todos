@@ -8,4 +8,6 @@ export class JwtPayload {
   username: string;
   @ApiProperty({ description: 'Refresh token for mobile app', nullable: true })
   refreshToken?: string;
+  @ApiProperty({ description: 'Array user roles', nullable: false })
+  roles: string[];
 }

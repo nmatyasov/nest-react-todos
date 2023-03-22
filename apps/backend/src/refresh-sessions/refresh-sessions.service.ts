@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { Model, Types } from 'mongoose';
+import { Error, Model, Types } from 'mongoose';
 import { RefreshTokenSessionDto } from './dto/refreshTokenSession.dto';
 import { RefreshSessionModel } from './models/refreshSessions.models';
 import { UsersService } from '@users/users.service';
@@ -46,7 +46,7 @@ export class RefreshSessionsService {
       this.configService.get<string>('MAX_LIMIT_CONNECTIONS'),
       10
     );
-  
+
     if (cntConnection >= cntMaxLimitConnection) {
       await this.clearQueueTokens(userId);
     }
@@ -105,11 +105,11 @@ export class RefreshSessionsService {
       userId,
       token: refreshToken,
     });
-
+    /* Вдруг нет такого токена */
     if (!token) {
       throw new HttpException('Invalid credantials', HttpStatus.UNAUTHORIZED);
     }
-
+    /*не истек ли срок годности токена */
     return Date.now() >= token.expiresIn * 1000 ? true : false;
   }
 
@@ -118,7 +118,11 @@ export class RefreshSessionsService {
    * @returns {Promise<void>}
    */
   async panic(): Promise<void> {
-    this.refreshSessionModel.deleteMany();
+    this.refreshSessionModel.deleteMany({}, function (err:Error) {
+      if (err) {
+        return console.log(err);
+      }
+    });
   }
 
   /**
@@ -127,7 +131,11 @@ export class RefreshSessionsService {
    */
 
   async removeAllTokensByUserId(userId: Types.ObjectId): Promise<void> {
-    this.refreshSessionModel.deleteMany({ userId });
+    this.refreshSessionModel.deleteMany({ userId: userId }, function (err:Error) {
+      if (err) {
+        return console.log(err);
+      }
+    });
   }
 
   /**
@@ -138,9 +146,9 @@ export class RefreshSessionsService {
    */
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
-    options: object
+    userId: Types.ObjectId
   ): Promise<UserDto> {
-    const user = await this.userService.findOne(options);
+    const user = await this.userService.findById(userId);
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

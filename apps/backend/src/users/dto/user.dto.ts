@@ -19,4 +19,6 @@ export class UserDto {
   @ApiProperty({ description: 'User email confirmed status', nullable: true })
   isEmailConfirmed: boolean;
 
+  @ApiProperty({ description: 'Array user roles', nullable: false })
+  roles: string[];
 }
