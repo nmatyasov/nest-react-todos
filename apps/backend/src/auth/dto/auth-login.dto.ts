@@ -18,4 +18,7 @@ export class AuthUserDto {
   @ApiProperty({ description: 'Refresh token', nullable: false })
   @IsNotEmpty()
   readonly refreshToken: string;
+
+  @ApiProperty({ description: 'Array user roles', nullable: false })
+  roles: string[];
 }

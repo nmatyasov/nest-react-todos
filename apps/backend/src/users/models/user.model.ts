@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IUser } from '@libs/user.interface';
-import { genSalt, hash} from 'bcrypt'
+import { genSalt, hash } from 'bcrypt';
+
+import Role from './../role.enum';
 
 @Schema({ collection: 'users', timestamps: true })
 export class UserModel extends Document implements IUser {
@@ -11,11 +13,14 @@ export class UserModel extends Document implements IUser {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true, unique: true,  })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ default: false })
   isEmailConfirmed: boolean;
+
+  @Prop({ type: [String], default: [Role.User], enum: [Role.Admin, Role.User] })
+  roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);

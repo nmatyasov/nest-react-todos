@@ -61,13 +61,19 @@ export class AuthService {
   ): Promise<AuthUserDto> {
     const user = await this.usersService.findById(userId);
 
-    const payload: JwtPayload = { _id: user._id, username: user.username };
+    const payload: JwtPayload = {
+      _id: user._id,
+      username: user.username,
+      roles: user.roles,
+    };
     const tokens = await this.getTokens(payload);
 
     const expires: string = this.configService.get<string>(
       'JWT_REFRESH_TOKEN_EXPIRATION_TIME'
     );
-    const expiresIn:number =Math.floor(Date.now()/1000)+parseInt(expires,10);
+    /*к текущему времени в секундах прибавляем врямя жизни refresh token в секундах и сохраняем как Unix timestamp */
+    const expiresIn: number =
+      Math.floor(Date.now() / 1000) + parseInt(expires, 10);
     const refreshTokenSessionDto: RefreshTokenSessionDto = {
       token: tokens.refreshToken,
       fingerprint,
@@ -75,15 +81,13 @@ export class AuthService {
       userId,
     };
     /* запись refersToken*/
-    await this.refreshSessionsService.saveToken(
-      refreshTokenSessionDto
-    );
-
+    await this.refreshSessionsService.saveToken(refreshTokenSessionDto);
 
     return {
       _id: user._id,
       username: user.username,
       ...tokens,
+      roles: user.roles,
     };
   }
 
@@ -97,32 +101,21 @@ export class AuthService {
   ): Promise<AuthUserDto> {
     const user = await this.usersService.findById(userId);
 
-    const payload: JwtPayload = { _id: user._id, username: user.username };
+    const payload: JwtPayload = {
+      _id: user._id,
+      username: user.username,
+      roles: user.roles,
+    };
     const tokens = await this.getTokens(payload);
 
     return {
       _id: user._id,
       username: user.username,
       ...tokens,
+      roles: user.roles,
     };
   }
-  /**
-   * Ищем пользователя по RefreshToken
-   * @param {string} refreshToken
-   * @param {ObjectId} userId идентификатор пользователя
-   * @returns {UserDto} Promise single UserDto
-   */
-  async getUserIfRefreshTokenMatches(
-    refreshToken: string,
-    userId: Types.ObjectId
-  ): Promise<UserDto> {
-    return await this.refreshSessionsService.getUserIfRefreshTokenMatches(
-      refreshToken,
-      {
-        _id: userId,
-      }
-    );
-  }
+
 
   /**
    * Ищем пользователя по email и password
@@ -131,7 +124,6 @@ export class AuthService {
    * @returns {UserDto} Promise single UserDto
    */
   async validateUser(email: string, password: string): Promise<UserDto> {
-
     const loginUserDto: credentialsUserDto = { email, password };
     const user = await this.usersService.findByLogin(loginUserDto);
 

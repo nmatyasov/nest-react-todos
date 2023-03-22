@@ -9,7 +9,6 @@ import { UsersModule } from '@users/users.module';
 import { AuthService } from './auth.service';
 import { JwtRefreshTokenStrategy } from '@auth/strategies/jwt-refresh-token.strategy';
 
-
 import { EmailConfirmationModule } from './../email-confirmation/email-confirmation.module';
 import { RefreshSessionsModule } from './../refresh-sessions/refresh-sessions.module';
 const jwtFactory = {
@@ -18,7 +17,7 @@ const jwtFactory = {
     signOptions: {
       expiresIn: `${configService.get<string>(
         'JWT_ACCESS_TOKEN_EXPIRATION_TIME'
-      )}ms`,
+      )}s`,
     },
   }),
   inject: [ConfigService],
@@ -26,12 +25,12 @@ const jwtFactory = {
 
 @Module({
   imports: [
-  UsersModule,
+    UsersModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync(jwtFactory),
     EmailConfirmationModule,
-    RefreshSessionsModule
+    RefreshSessionsModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshTokenStrategy],
   exports: [AuthService],
