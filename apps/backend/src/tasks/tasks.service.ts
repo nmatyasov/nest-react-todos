@@ -7,7 +7,7 @@ import { TaskModel } from '@tasks/models/task.models';
 
 import { Model, Types } from 'mongoose';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-import { toTaskDto } from '../../src/app/shared/mappers';
+import { toTaskDto } from '../app/shared/mappers';
 import { TaskResponseDto } from '@tasks/dto/task.response.dto';
 
 @Injectable()

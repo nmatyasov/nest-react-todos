@@ -106,6 +106,7 @@ export class AuthController {
       username: loginStatus.username,
       refreshToken: loginStatus.refreshToken,
       roles: loginStatus.roles,
+      avatar:loginStatus.avatar,
     };
   }
 

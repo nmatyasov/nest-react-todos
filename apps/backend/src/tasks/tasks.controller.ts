@@ -19,7 +19,7 @@ import { TaskUpdateDto } from '@tasks/dto/task.update.dto';
 
 import { GetUser } from '@auth/get-user.decorator';
 import { UserDto } from '@users/dto/user.dto';
-import { ParseObjectIdPipe } from './../app/shared/pipes';
+import { ParseObjectIdPipe } from '../app/shared/pipes';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import JwtAuthenticationGuard from '@auth/guards/jwt-authentication.guard';
 import { TaskResponseDto } from '@tasks/dto/task.response.dto';

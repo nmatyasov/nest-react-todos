@@ -4,13 +4,15 @@ import { CreateUserDto } from '@users/dto/user.create.dto';
 import { UserDto } from '@users/dto/user.dto';
 import { compare } from 'bcrypt';
 import { Model, Types } from 'mongoose';
-import { toUserDto } from '../../src/app/shared/mappers';
+import { toUserDto } from '../app/shared/mappers';
 import { UserModel } from './models/user.model';
 import { credentialsUserDto } from '@auth/dto/credentialsUser.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectModel(UserModel.name)
     private readonly userModel: Model<UserModel>
   ) {}
@@ -98,15 +100,31 @@ export class UsersService {
    * @returns  {void} Promise
    */
 
-  async markEmailAsConfirmed(email: string): Promise<void> {
+  async markEmailAsConfirmed(email: string): Promise<UserDto> {
     const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
     }
     user.isEmailConfirmed = true;
-    user.save();
+    await user.save();
+    return toUserDto(user);
   }
 
+  /**
+   * Добавление аватара пользователя
+   * @param {Types.ObjectId} userId
+   * @param {string} path путь к файлу
+   * @returns  {string} сетевой путь к файлу
+   */
 
-
+  async setAvatar(userId: Types.ObjectId, filename: string): Promise<UserDto> {
+    const user = await this.userModel.findById({ _id: userId }).exec();
+    if (!user) {
+      throw new HttpException('Invalid credantials', HttpStatus.BAD_REQUEST);
+    }
+    const SERVER_URL:string  =  this.configService.get<string>("SERVER_URL")+'/';
+    user.avatar = `${SERVER_URL}${filename}`;
+    await user.save();
+    return toUserDto(user);
+  }
 }

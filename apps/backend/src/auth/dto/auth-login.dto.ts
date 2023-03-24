@@ -21,4 +21,7 @@ export class AuthUserDto {
 
   @ApiProperty({ description: 'Array user roles', nullable: false })
   roles: string[];
+
+  @ApiProperty({ description: 'User avatar', nullable: false })
+  readonly avatar: string;
 }

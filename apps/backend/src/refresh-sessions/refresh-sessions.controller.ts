@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import Role from '@users/role.enum';
-import { ParseObjectIdPipe } from './../app/shared/pipes';
+import { ParseObjectIdPipe } from '../app/shared/pipes';
 import { Types } from 'mongoose';
 import { RefreshSessionsService } from './refresh-sessions.service';
 
