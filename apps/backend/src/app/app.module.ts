@@ -4,10 +4,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TasksModule } from '@tasks/tasks.module';
 import { getMongoConfig } from '../config/db-connect.config';
-
+import { UsersModule } from '@users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RefreshSessionsModule } from '@refresh-sessions/refresh-sessions.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,9 +22,21 @@ import { RefreshSessionsModule } from '@refresh-sessions/refresh-sessions.module
       inject: [ConfigService],
       useFactory: getMongoConfig,
     }),
+    ServeStaticModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => [
+        {
+          rootPath: join(
+            __dirname,
+            configService.get<string>('STATIC_FOLDER')
+          ),
+        },
+      ],
+    }),
     AuthModule,
     TasksModule,
     RefreshSessionsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

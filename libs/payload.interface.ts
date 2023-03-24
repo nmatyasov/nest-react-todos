@@ -10,4 +10,6 @@ export class JwtPayload {
   refreshToken?: string;
   @ApiProperty({ description: 'Array user roles', nullable: false })
   roles: string[];
+  @ApiProperty({ description: 'User avatar', nullable: true })
+  avatar?: string;
 }

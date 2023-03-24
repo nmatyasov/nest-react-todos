@@ -21,6 +21,9 @@ export class UserModel extends Document implements IUser {
 
   @Prop({ type: [String], default: [Role.User], enum: [Role.Admin, Role.User] })
   roles: Role[];
+
+  @Prop()
+  avatar:string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);

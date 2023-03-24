@@ -65,6 +65,7 @@ export class AuthService {
       _id: user._id,
       username: user.username,
       roles: user.roles,
+      avatar: user.avatar,
     };
     const tokens = await this.getTokens(payload);
 
@@ -88,6 +89,7 @@ export class AuthService {
       username: user.username,
       ...tokens,
       roles: user.roles,
+      avatar: user.avatar,
     };
   }
 
@@ -113,9 +115,9 @@ export class AuthService {
       username: user.username,
       ...tokens,
       roles: user.roles,
+      avatar: user.avatar,
     };
   }
-
 
   /**
    * Ищем пользователя по email и password
