@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { RefreshSessionsModule } from '@refresh-sessions/refresh-sessions.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AuthGoogleModule } from '@auth-google/auth-google.module';
 
 @Module({
   imports: [
@@ -26,10 +27,7 @@ import { join } from 'path';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => [
         {
-          rootPath: join(
-            __dirname,
-            configService.get<string>('STATIC_FOLDER')
-          ),
+          rootPath: join(__dirname, configService.get<string>('STATIC_FOLDER')),
         },
       ],
     }),
@@ -37,6 +35,7 @@ import { join } from 'path';
     TasksModule,
     RefreshSessionsModule,
     UsersModule,
+    AuthGoogleModule
   ],
   controllers: [AppController],
   providers: [AppService],
