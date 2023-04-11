@@ -18,7 +18,8 @@
       "@tasks/*": ["apps/backend/src/tasks/*"],
       "@email/*": ["apps/backend/src/email/*"],
       "@libs/*": ["libs/*"],
-      "@refresh-sessions/*": ["apps/backend/src/refresh-sessions/*"]
+      "@refresh-sessions/*": ["apps/backend/src/refresh-sessions/*"],
+      "@auth-google/*": ["apps/backend/src/auth-google/*"]
     }
   }
 }
